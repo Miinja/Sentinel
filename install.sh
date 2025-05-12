@@ -159,19 +159,19 @@ else
     log "✅ Compilation réussie."
 fi
 
-log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
+log "Téléchargement du modèle Phi-1.5 GGUF (q4_0)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
 
-if [ -f "phi-2.gguf" ]; then
+if [ -f "phi-1.5.gguf" ]; then
     log "Modèle déjà présent, saut du téléchargement."
 else
-    if ! curl -L -o phi-2.gguf https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf; then
-        log "❌ Échec du téléchargement du modèle."
+    if ! curl -L -o phi-1.5.gguf https://huggingface.co/TheBloke/phi-1.5-GGUF/resolve/main/phi-1.5.Q4_0.gguf; then
+        log "❌ Échec du téléchargement du modèle Phi-1.5."
         exit 1
     fi
 
-    if ! head -c 4 phi-2.gguf | grep -q "GGUF"; then
+    if ! head -c 4 phi-1.5.gguf | grep -q "GGUF"; then
         log "❌ Fichier téléchargé invalide (pas un modèle GGUF ?)."
         exit 1
     fi
@@ -181,7 +181,7 @@ log "Création du script run.sh..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 
-MODEL_PATH="../../models/phi-2.gguf"
+MODEL_PATH="../../models/phi-1.5.gguf"
 OUTPUT_PATH="output.txt"
 
 if [ ! -d "$HOME/sentinel/llama.cpp/build" ]; then
