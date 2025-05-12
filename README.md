@@ -1,8 +1,6 @@
 
 # 🛡️ **Sentinel** - Layer de Debian pour la Cybersécurité 🚀
 
-**Par [Miinja](https://github.com/Miinja)**
-
 ## 🌟 Description
 
 **Sentinel** est un environnement léger et sécurisé basé sur Debian, conçu pour les **professionnels de la cybersécurité**. Il inclut une série d'outils puissants pour les **audits**, les **tests de pénétration**, la **surveillance réseau**, et plus encore. Le système fonctionne de manière totalement **hors ligne** sur des machines basées sur des processeurs **ARM** (ex. Raspberry Pi).
@@ -122,5 +120,5 @@ Ce projet est sous **licence MIT**. Profite-en ! 🎉
 ---
 
 ### 🚀 Prêt à décoller ? Tu es maintenant armé pour défendre tes systèmes avec **Sentinel**. 🌍💥
-
+**Par [Miinja](https://github.com/Miinja)**
 
