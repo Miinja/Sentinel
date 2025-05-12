@@ -93,12 +93,13 @@ cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS -DLLAMA_CURL=ON
 log "Compilation avec make..."
 make -j$(nproc)
 
-if [ ! -f "./llama" ]; then
+if [ ! -f "~/sentinel/llama.cpp/build/llama" ]; then
     log "❌ Erreur : la compilation de llama.cpp a échoué ou le binaire 'llama' est introuvable."
     exit 1
 else
     log "✅ Compilation réussie : binaire 'llama' trouvé."
 fi
+
 
 log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
 mkdir -p ~/sentinel/models
