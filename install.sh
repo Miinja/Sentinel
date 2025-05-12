@@ -59,8 +59,12 @@ alias live='sudo iftop'
 alias scan='nmap -sV -T4'
 alias vuln='nikto -host'
 
+# Fonction Sentinel
+sentinel() {
+~/sentinel/run.sh "$@"
+}
+
 # Alias Sentinel
-alias sentinel='func() { ./sentinel/run.sh "$*"; }; func'
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
 alias sentinel-system='neofetch --cpu_temp --gpu_temp'
 
@@ -113,15 +117,18 @@ cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 cd ~/sentinel/llama.cpp/build
 
+# Vérifier la présence de llama-run
 if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
-    log "❌ Erreur : aucun binaire 'llama-*' trouvé dans bin/, compilation probablement échouée."
+    echo "❌ Erreur : aucun binaire 'llama-*' trouvé dans bin/, compilation probablement échouée."
     exit 1
 else
-    log "✅ Compilation réussie : un ou plusieurs binaires 'llama-*' trouvés."
+    echo "✅ Compilation réussie : un ou plusieurs binaires 'llama-*' trouvés."
 fi
 
-
-./bin/llama-run -m ../../models/phi-2.gguf -p \
+# Trouver le binaire llama (nom générique pour être plus flexible)
+BIN=$(ls ./bin/llama-* | head -n1)
+echo "Lancement de $BIN avec le modèle..."
+$BIN -m ../../models/phi-2.gguf -p \
 "SYSTEM: You are Sentinel, an offline cybersecurity AI running inside a lightweight Linux OS. You are a CLI-based assistant installed on a Raspberry Pi 4, designed to help with audits, forensics, networking, penetration testing, and Linux administration.
 
 You always reply in fluent French, using concise and technical language, but you accept common English terms used in cybersecurity (e.g. scan, port, payload, exploit, reverse shell). You do not translate those.
@@ -152,10 +159,12 @@ if [[ "$ARCH" == "arm64" ]]; then
     unzip nuclei_3.4.3_linux_arm64.zip
     sudo mv nuclei /usr/local/bin/
     chmod +x /usr/local/bin/nuclei
+    rm nuclei_3.4.3_linux_arm64.zip
 else
     NUCLEI_URL="https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_${ARCH}.deb"
     wget -nc "$NUCLEI_URL" -O nuclei.deb && sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
 fi
+
 
 log "Création de la documentation..."
 mkdir -p ~/sentinel/docs
