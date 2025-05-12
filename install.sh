@@ -23,8 +23,8 @@ sudo apt update && sudo apt upgrade -y
 log "Installation des outils nécessaires..."
 sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
     nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap \
-    iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev \
-    libcurl4-openssl-dev
+    iperf3 iftop htop unzip arp-scan hydra john lynis bat neofetch \
+    libopenblas-dev libcurl4-openssl-dev
 
 log "Installation de Oh My Zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -62,6 +62,7 @@ alias vuln='nikto -host'
 # Alias Sentinel
 alias sentinel='func() { ./sentinel/run.sh "$*"; }; func'
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
+alias sentinel-system='neofetch --cpu_temp --gpu_temp'
 
 EOF
 fi
@@ -112,7 +113,7 @@ cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 cd ~/sentinel/llama.cpp/build
 
-if [ ! -f ./llama ]; then
+if [ ! -f ~/sentinel/llama.cpp/build/llama ]; then
     echo "❌ Le binaire 'llama' est introuvable. Lance à nouveau install.sh ou vérifie la compilation."
     exit 1
 fi
@@ -177,6 +178,7 @@ lynis : Audit sécurité
 bat : cat amélioré
 mitmproxy : Interception HTTPS
 nuclei : Scanner vulnérabilités (via GitHub)
+nmap : Vue global du systeme
 
 # Liste des Alias disponibles dans Sentinel
 
@@ -199,6 +201,10 @@ nuclei : Scanner vulnérabilités (via GitHub)
 ## Alias pour afficher la documentation
 - `sentinel-help` : Affiche la documentation des outils installés et des alias disponibles sur Sentinel.
   Exemple d'utilisation : `sentinel-help`
+
+## Alias Overall Systeme
+- `sentinel-system` : Utilise Neofetch pour une vue global du systeme (avec la temperature GPU/CPU)
+  Exemple d'utilisation : `sentinel-system`
 EOF
 
 chmod +x ~/sentinel/docs/tools_doc.txt
