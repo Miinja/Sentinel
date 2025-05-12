@@ -1,25 +1,28 @@
-# Sentinel - Layer de Debian pour la cybersécurité
+Voici un **README.md** pimpé avec des emojis et un style un peu plus fun et dynamique pour ton projet **Sentinel** !
 
-## Description
+````markdown
+# 🛡️ **Sentinel** - Layer de Debian pour la Cybersécurité 🚀
 
-**Sentinel** est un environnement léger et sécurisé basé sur Debian, conçu pour les professionnels de la cybersécurité. Il inclut une série d'outils puissants pour les audits, les tests de pénétration, la surveillance du réseau, et plus encore. Le système fonctionne de manière totalement hors ligne sur des machines basées sur des processeurs ARM (ex. Raspberry Pi).
+## 🌟 Description
 
-L'objectif est de fournir une interface de ligne de commande (CLI) optimisée pour les tâches de cybersécurité, avec une intégration fluide d'une IA de type LLM pour une assistance interactive.
+**Sentinel** est un environnement léger et sécurisé basé sur Debian, conçu pour les **professionnels de la cybersécurité**. Il inclut une série d'outils puissants pour les **audits**, les **tests de pénétration**, la **surveillance réseau**, et plus encore. Le système fonctionne de manière totalement **hors ligne** sur des machines basées sur des processeurs **ARM** (ex. Raspberry Pi).
 
-## Fonctionnalités
+L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisée pour les tâches de cybersécurité, avec une intégration fluide d'une **IA de type LLM** pour une assistance interactive. 💡
 
-- **IA Sentinel** : Utilise un modèle de langage pour fournir des réponses techniques et concises en français, adaptées à la cybersécurité.
-- **Outils de cybersécurité** : Des outils populaires pour le pentesting, le scan réseau, l'analyse de vulnérabilités, etc.
-- **Alias personnalisés** : Des alias utiles pour simplifier les commandes courantes et accélérer les opérations de cybersécurité.
-- **Documentation rapide** : Accès rapide à la documentation des outils via un simple alias.
+## ⚙️ Fonctionnalités
 
-## Prérequis
+- **💬 IA Sentinel** : Utilise un modèle de langage pour fournir des réponses **techniques** et **concises** en français, adaptées à la cybersécurité. 🛠️
+- **🕵️‍♂️ Outils de cybersécurité** : Des outils populaires pour le **pentesting**, le **scan réseau**, l'**analyse de vulnérabilités**, etc. 🔍
+- **🛠️ Alias personnalisés** : Des alias utiles pour simplifier les commandes courantes et accélérer les opérations de cybersécurité. ⚡
+- **📚 Documentation rapide** : Accès rapide à la **documentation** des outils via un simple alias. 📄
 
-- Raspberry Pi 4 (ou tout autre appareil ARM)
-- Debian (ou une distribution basée sur Debian)
-- Connexion internet pour l'installation des dépendances
+## 📝 Prérequis
 
-## Installation
+- Raspberry Pi 4 (ou tout autre appareil ARM) 🍓
+- Debian (ou une distribution basée sur Debian) 🐧
+- Connexion internet pour l'installation des dépendances 🌐
+
+## 🚀 Installation
 
 1. **Télécharge le script d'installation** et exécute-le sur ton Raspberry Pi ou machine Debian.
 
@@ -27,111 +30,109 @@ L'objectif est de fournir une interface de ligne de commande (CLI) optimisée po
    curl -fsSL https://raw.githubusercontent.com/ton-repository/install.sh -o install.sh
    chmod +x install.sh
    ./install.sh
+````
 
-    Le script d'installation fait les actions suivantes :
+```
+Le script d'installation effectue les actions suivantes :
 
-        Mise à jour du système.
+- Mise à jour du système 🆙
+- Installation des outils de cybersécurité 🔐
+- Configuration de **Zsh** et installation de **Oh My Zsh** 🖥️
+- Clonage et compilation du projet **llama.cpp** pour l'IA Sentinel 🤖
+- Téléchargement du modèle **Phi-2 GGUF** 🧠
+- Création des scripts et alias personnalisés 🔧
+```
 
-        Installation de nombreux outils de cybersécurité.
+## 🧑‍💻 Alias disponibles
 
-        Configuration de Zsh et installation de Oh My Zsh.
+Voici les principaux alias disponibles dans **Sentinel** :
 
-        Clonage et compilation du projet llama.cpp pour l'IA Sentinel.
+### 📡 Alias pour la capture réseau et surveillance
 
-        Téléchargement du modèle Phi-2 GGUF.
+* `sniff` : Lance **tcpdump** pour capturer tout le trafic réseau sur toutes les interfaces.
+* `live` : Lance **iftop** pour afficher en temps réel la bande passante réseau.
 
-        Création des scripts et alias personnalisés.
+### 🔎 Alias pour les scans et tests de vulnérabilité
 
-Alias disponibles
+* `scan` : Lance un scan de ports et services sur une cible avec **nmap**.
+* `vuln` : Lance un scan de vulnérabilités sur un serveur web avec **nikto**.
 
-Voici les principaux alias disponibles dans Sentinel :
-Alias pour la capture réseau et surveillance
+### 💬 Alias pour l'interaction avec **Sentinel**
 
-    sniff : Lance tcpdump pour capturer tout le trafic réseau sur toutes les interfaces.
+* `sentinel` : Lance l'assistant **Sentinel** (IA basée sur un LLM).
+* `sentinel <question>` : Pose ta question à **Sentinel** en cybersécurité.
 
-sniff
+### 📚 Alias pour afficher la documentation
 
-live : Lance iftop pour afficher en temps réel la bande passante réseau.
+* `sentinel-help` : Affiche la **documentation** des outils installés et des alias disponibles sur Sentinel.
 
-    live
+## 👨‍💻 Exemples d'utilisation
 
-Alias pour les scans et tests de vulnérabilité
+Voici quelques exemples d'utilisation de **Sentinel** :
 
-    scan : Lance un scan de ports et services sur une cible avec nmap.
+* **Scanner un réseau avec nmap** :
 
-scan <target>
+  ```bash
+  scan 192.168.1.0/24
+  ```
 
-vuln : Lance un scan de vulnérabilités sur un serveur web avec nikto.
+* **Analyser le trafic réseau avec tcpdump** :
 
-    vuln <target>
+  ```bash
+  sniff
+  ```
 
-Alias pour l'interaction avec Sentinel
+* **Demander à l'IA Sentinel un conseil sur un audit réseau** :
 
-    sentinel : Lance l'assistant Sentinel (IA basée sur un LLM).
+  ```bash
+  sentinel Comment auditer un réseau interne ?
+  ```
 
-    sentinel <question>
+* **Accéder à la documentation des outils** :
 
-Alias pour afficher la documentation
+  ```bash
+  sentinel-help
+  ```
 
-    sentinel-help : Affiche la documentation des outils installés et des alias disponibles sur Sentinel.
-
-    sentinel-help
-
-Exemples d'utilisation
-
-Voici quelques exemples d'utilisation de Sentinel :
-
-    Scanner un réseau avec nmap :
-
-scan 192.168.1.0/24
-
-Analyser le trafic réseau avec tcpdump :
-
-sniff
-
-Demander à l'IA Sentinel un conseil sur un audit réseau :
-
-sentinel Comment auditer un réseau interne ?
-
-Accéder à la documentation des outils :
-
-    sentinel-help
-
-Documentation des outils
+## 📖 Documentation des outils
 
 Un fichier de documentation est également disponible pour tous les outils installés. Vous pouvez le consulter avec la commande :
 
+```bash
 sentinel-help
+```
 
-Voici quelques-uns des outils inclus :
+Voici quelques-uns des outils inclus dans **Sentinel** :
 
-    nmap : Scanner de réseau pour identifier les hôtes et services.
+* **nmap** : Scanner de réseau pour identifier les hôtes et services.
+* **tcpdump** : Capture réseau en ligne de commande pour analyser les paquets.
+* **nikto** : Scanner de vulnérabilités pour les serveurs web.
+* **sqlmap** : Outil d'injection SQL automatisé pour tester les bases de données.
+* **aircrack-ng** : Suite d'outils pour tester la sécurité des réseaux Wi-Fi.
 
-    tcpdump : Capture réseau en ligne de commande pour analyser les paquets.
+Et bien d'autres... 🔧
 
-    nikto : Scanner de vulnérabilités pour les serveurs web.
+## 👐 Contribution
 
-    sqlmap : Outil d'injection SQL automatisé pour tester les bases de données.
+Si tu souhaites contribuer à **Sentinel**, tu peux ouvrir une **pull request** sur GitHub. Nous sommes toujours à la recherche de nouvelles idées pour améliorer ce projet ! 🚀
 
-    aircrack-ng : Suite d'outils pour tester la sécurité des réseaux Wi-Fi.
+## 📄 Licence
 
-    Et bien d'autres...
+Ce projet est sous **licence MIT**. Profite-en ! 🎉
 
-Contribution
+---
 
-Si tu souhaites contribuer à Sentinel, tu peux ouvrir une pull request sur GitHub.
-Licence
+### 🚀 Prêt à décoller ? Tu es maintenant armé pour défendre tes systèmes avec **Sentinel**. 🌍💥
 
-Ce projet est sous licence MIT.
+```
 
+---
 
-### Explication des sections :
-- **Description** : Présente le projet et ses fonctionnalités principales.
-- **Prérequis** : Liste les conditions nécessaires pour faire fonctionner le projet.
-- **Installation** : Décrit les étapes pour installer et configurer Sentinel.
-- **Alias** : Fournit des exemples d'alias utiles pour l'utilisateur.
-- **Exemples d'utilisation** : Montre comment utiliser les commandes de manière concrète.
-- **Documentation des outils** : Donne un aperçu des outils installés et leur documentation.
-- **Contribution et Licence** : Invite à contribuer et fournit la licence.
+### Qu'est-ce que j'ai ajouté ?
+- **Emojis** pour rendre le README plus visuel et attrayant 🎨.
+- Des **titres clairs** et des **sections** pour une meilleure organisation.
+- Un **style dynamique** pour les commandes, les alias, et les exemples d'utilisation.
+- **Encouragements à contribuer** avec une touche plus fun pour ouvrir à la collaboration 🚀.
 
-Ce fichier README doit fournir toutes les informations nécessaires pour configurer et utiliser Sentinel efficacement.
+Cela devrait rendre le projet plus engageant pour les utilisateurs ! 😊
+```
