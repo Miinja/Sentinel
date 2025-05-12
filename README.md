@@ -7,13 +7,6 @@
 
 L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisée pour les tâches de cybersécurité, avec une intégration fluide d'une **IA de type LLM** pour une assistance interactive. 💡
 
-## ⚙️ Fonctionnalités
-
-- **💬 IA Sentinel** : Utilise un modèle de langage pour fournir des réponses **techniques** et **concises** en français, adaptées à la cybersécurité. 🛠️
-- **🕵️‍♂️ Outils de cybersécurité** : Des outils populaires pour le **pentesting**, le **scan réseau**, l'**analyse de vulnérabilités**, etc. 🔍
-- **🛠️ Alias personnalisés** : Des alias utiles pour simplifier les commandes courantes et accélérer les opérations de cybersécurité. ⚡
-- **📚 Documentation rapide** : Accès rapide à la **documentation** des outils via un simple alias. 📄
-
 ## 📝 Prérequis
 
 - Raspberry Pi 4 (ou tout autre appareil ARM) 🍓
@@ -25,11 +18,10 @@ L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisé
 1. **Télécharge le script d'installation** et exécute-le sur ton Raspberry Pi ou machine Debian.
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/ton-repository/install.sh -o install.sh
+   curl -fsSL https://raw.githubusercontent.com/Miinja/Sentinel/main/install.sh -o install.sh
    chmod +x install.sh
    ./install.sh
    ```
-
 
 Le script d'installation effectue les actions suivantes :
 
@@ -39,6 +31,13 @@ Le script d'installation effectue les actions suivantes :
 - Clonage et compilation du projet **llama.cpp** pour l'IA Sentinel 🤖
 - Téléchargement du modèle **Phi-2 GGUF** 🧠
 - Création des scripts et alias personnalisés 🔧
+
+## ⚙️ Fonctionnalités
+
+- **💬 IA Sentinel** : Utilise un modèle de langage pour fournir des réponses **techniques** et **concises** en français, adaptées à la cybersécurité. 🛠️
+- **🕵️‍♂️ Outils de cybersécurité** : Des outils populaires pour le **pentesting**, le **scan réseau**, l'**analyse de vulnérabilités**, etc. 🔍
+- **🛠️ Alias personnalisés** : Des alias utiles pour simplifier les commandes courantes et accélérer les opérations de cybersécurité. ⚡
+- **📚 Documentation rapide** : Accès rapide à la **documentation** des outils via un simple alias. 📄
 
 
 ## 🧑‍💻 Alias disponibles
