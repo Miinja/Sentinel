@@ -94,11 +94,11 @@ cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS -DLLAMA_CURL=ON
 log "Compilation avec make..."
 make -j$(nproc)
 
-if [ ! -f "~/sentinel/llama.cpp/build/llama" ]; then
-    log "❌ Erreur : la compilation de llama.cpp a échoué ou le binaire 'llama' est introuvable."
+if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
+    log "❌ Erreur : aucun binaire 'llama-*' trouvé dans bin/, compilation probablement échouée."
     exit 1
 else
-    log "✅ Compilation réussie : binaire 'llama' trouvé."
+    log "✅ Compilation réussie : un ou plusieurs binaires 'llama-*' trouvés."
 fi
 
 
@@ -113,12 +113,15 @@ cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 cd ~/sentinel/llama.cpp/build
 
-if [ ! -f ~/sentinel/llama.cpp/build/llama ]; then
-    echo "❌ Le binaire 'llama' est introuvable. Lance à nouveau install.sh ou vérifie la compilation."
+if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
+    log "❌ Erreur : aucun binaire 'llama-*' trouvé dans bin/, compilation probablement échouée."
     exit 1
+else
+    log "✅ Compilation réussie : un ou plusieurs binaires 'llama-*' trouvés."
 fi
 
-./llama -m ../../models/phi-2.gguf -p \
+
+./bin/llama-run -m ../../models/phi-2.gguf -p \
 "SYSTEM: You are Sentinel, an offline cybersecurity AI running inside a lightweight Linux OS. You are a CLI-based assistant installed on a Raspberry Pi 4, designed to help with audits, forensics, networking, penetration testing, and Linux administration.
 
 You always reply in fluent French, using concise and technical language, but you accept common English terms used in cybersecurity (e.g. scan, port, payload, exploit, reverse shell). You do not translate those.
