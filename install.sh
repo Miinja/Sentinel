@@ -5,7 +5,7 @@
 # ============================
 
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 log() {
     echo -e "${YELLOW}==> [Sentinel] $1${NC}"
@@ -24,7 +24,7 @@ log "Installation des outils nécessaires..."
 sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
     nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap \
     iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev \
-    libcurl4-openssl-dev  # Ajout de la bibliothèque libcurl
+    libcurl4-openssl-dev
 
 log "Installation de Oh My Zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -78,11 +78,27 @@ else
     log "llama.cpp déjà cloné, saut..."
 fi
 
+log "Installation des dépendances pour la compilation (OpenBLAS, pkg-config, etc.)..."
+sudo apt install -y libopenblas-dev libomp-dev pkg-config
+
 log "Compilation via CMake..."
 cd ~/sentinel/llama.cpp
 mkdir -p build && cd build
-cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS -DLLAMA_CURL=ON  # Ajout de CURL pour la compilation
+
+ARCH=$(uname -m)
+
+log "Compilation avec CMake..."
+cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS -DLLAMA_CURL=ON
+
+log "Compilation avec make..."
 make -j$(nproc)
+
+if [ ! -f "./llama" ]; then
+    log "❌ Erreur : la compilation de llama.cpp a échoué ou le binaire 'llama' est introuvable."
+    exit 1
+else
+    log "✅ Compilation réussie : binaire 'llama' trouvé."
+fi
 
 log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
 mkdir -p ~/sentinel/models
@@ -90,11 +106,17 @@ cd ~/sentinel/models
 wget -nc https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf -O phi-2.gguf
 
 log "Création du script run.sh..."
+
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 cd ~/sentinel/llama.cpp/build
 
-./main -m ../../models/phi-2.gguf -p \
+if [ ! -f ./llama ]; then
+    echo "❌ Le binaire 'llama' est introuvable. Lance à nouveau install.sh ou vérifie la compilation."
+    exit 1
+fi
+
+./llama -m ../../models/phi-2.gguf -p \
 "SYSTEM: You are Sentinel, an offline cybersecurity AI running inside a lightweight Linux OS. You are a CLI-based assistant installed on a Raspberry Pi 4, designed to help with audits, forensics, networking, penetration testing, and Linux administration.
 
 You always reply in fluent French, using concise and technical language, but you accept common English terms used in cybersecurity (e.g. scan, port, payload, exploit, reverse shell). You do not translate those.
@@ -120,7 +142,6 @@ fi
 log "Installation de nuclei..."
 ARCH=$(dpkg --print-architecture)
 
-# Vérification de l'architecture pour télécharger le bon binaire (ARM64)
 if [[ "$ARCH" == "arm64" ]]; then
     wget -nc https://github.com/projectdiscovery/nuclei/releases/download/v3.4.3/nuclei_3.4.3_linux_arm64.zip
     unzip nuclei_3.4.3_linux_arm64.zip
@@ -156,14 +177,27 @@ bat : cat amélioré
 mitmproxy : Interception HTTPS
 nuclei : Scanner vulnérabilités (via GitHub)
 
-# Alias
+# Liste des Alias disponibles dans Sentinel
 
-- sniff : tcpdump -i any
-- live : iftop
-- scan : nmap -sV -T4
-- vuln : nikto -host
-- sentinel : lance l’IA
-- sentinel-help : cette doc
+## Alias pour la capture réseau et surveillance
+- `sniff` : Lance tcpdump pour capturer tout le trafic réseau sur toutes les interfaces.
+  Exemple d'utilisation : `sniff` 
+- `live` : Lance iftop pour afficher en temps réel la bande passante réseau.
+  Exemple d'utilisation : `live`
+
+## Alias pour les scans et tests de vulnérabilité
+- `scan` : Lance un scan de ports et services sur une cible avec nmap.
+  Exemple d'utilisation : `scan <target>`
+- `vuln` : Lance un scan de vulnérabilités sur un serveur web avec nikto.
+  Exemple d'utilisation : `vuln <target>`
+
+## Alias pour l'interaction avec Sentinel
+- `sentinel` : Lance l’assistant Sentinel (IA basée sur un LLM).
+  Exemple d'utilisation : `sentinel Comment auditer un réseau interne ?`
+  
+## Alias pour afficher la documentation
+- `sentinel-help` : Affiche la documentation des outils installés et des alias disponibles sur Sentinel.
+  Exemple d'utilisation : `sentinel-help`
 EOF
 
 chmod +x ~/sentinel/docs/tools_doc.txt
