@@ -159,12 +159,22 @@ else
     log "✅ Compilation réussie."
 fi
 
-log "Téléchargement du modèle Phi-2 GGUF..."
+log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
-if ! curl -L -o phi-2.gguf https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf; then
-    log "❌ Échec du téléchargement du modèle."
-    exit 1
+
+if [ -f "phi-2.gguf" ]; then
+    log "Modèle déjà présent, saut du téléchargement."
+else
+    if ! curl -L -o phi-2.gguf https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf; then
+        log "❌ Échec du téléchargement du modèle."
+        exit 1
+    fi
+
+    if ! head -c 4 phi-2.gguf | grep -q "GGUF"; then
+        log "❌ Fichier téléchargé invalide (pas un modèle GGUF ?)."
+        exit 1
+    fi
 fi
 
 log "Création du script run.sh..."
