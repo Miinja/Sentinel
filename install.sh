@@ -23,7 +23,8 @@ sudo apt update && sudo apt upgrade -y
 log "Installation des outils nécessaires..."
 sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
     nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap \
-    iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev
+    iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev \
+    libcurl4-openssl-dev  # Ajout de la bibliothèque libcurl
 
 log "Installation de Oh My Zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -59,7 +60,7 @@ alias scan='nmap -sV -T4'
 alias vuln='nikto -host'
 
 # Alias Sentinel
-alias sentinel='~/sentinel/run.sh'
+alias sentinel='func() { ./sentinel/run.sh "$*"; }; func'
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
 
 EOF
@@ -80,7 +81,7 @@ fi
 log "Compilation via CMake..."
 cd ~/sentinel/llama.cpp
 mkdir -p build && cd build
-cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS
+cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS -DLLAMA_CURL=ON  # Ajout de CURL pour la compilation
 make -j$(nproc)
 
 log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
@@ -118,8 +119,17 @@ fi
 
 log "Installation de nuclei..."
 ARCH=$(dpkg --print-architecture)
-NUCLEI_URL="https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_${ARCH}.deb"
-wget -nc "$NUCLEI_URL" -O nuclei.deb && sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
+
+# Vérification de l'architecture pour télécharger le bon binaire (ARM64)
+if [[ "$ARCH" == "arm64" ]]; then
+    wget -nc https://github.com/projectdiscovery/nuclei/releases/download/v3.4.3/nuclei_3.4.3_linux_arm64.zip
+    unzip nuclei_3.4.3_linux_arm64.zip
+    sudo mv nuclei /usr/local/bin/
+    chmod +x /usr/local/bin/nuclei
+else
+    NUCLEI_URL="https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_${ARCH}.deb"
+    wget -nc "$NUCLEI_URL" -O nuclei.deb && sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
+fi
 
 log "Création de la documentation..."
 mkdir -p ~/sentinel/docs
@@ -148,10 +158,10 @@ nuclei : Scanner vulnérabilités (via GitHub)
 
 # Alias
 
-- sniff : `tcpdump -i any`
-- live : `iftop`
-- scan : `nmap -sV -T4`
-- vuln : `nikto -host`
+- sniff : tcpdump -i any
+- live : iftop
+- scan : nmap -sV -T4
+- vuln : nikto -host
 - sentinel : lance l’IA
 - sentinel-help : cette doc
 EOF
