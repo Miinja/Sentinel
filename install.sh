@@ -180,7 +180,16 @@ fi
 log "Création du script run.sh..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
-cd ~/sentinel/llama.cpp/build
+
+MODEL_PATH="../../models/phi-2.gguf"
+OUTPUT_PATH="output.txt"
+
+if [ ! -d "$HOME/sentinel/llama.cpp/build" ]; then
+    echo "❌ Le répertoire de construction de Llama.cpp n'existe pas."
+    exit 1
+fi
+
+cd "$HOME/sentinel/llama.cpp/build"
 
 if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
     echo "❌ Aucun binaire 'llama-*' trouvé."
@@ -188,17 +197,30 @@ if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
 fi
 
 BIN=$(ls ./bin/llama-* | head -n1)
-$BIN -m ../../models/phi-2.gguf -p \
-"SYSTEM: You are Sentinel, an offline cybersecurity AI running inside a lightweight Linux OS. You are a CLI-based assistant installed on a Raspberry Pi 4, designed to help with audits, forensics, networking, penetration testing, and Linux administration.
 
-You always reply in fluent French, using concise and technical language, but you accept common English terms used in cybersecurity (e.g. scan, port, payload, exploit, reverse shell). You do not translate those.
+if [ ! -f "$MODEL_PATH" ]; then
+    echo "❌ Le modèle n'existe pas à l'emplacement spécifié : $MODEL_PATH"
+    exit 1
+fi
 
-You never hallucinate. If something is unclear, you explain how to verify it. Always provide command-line examples when useful. Be professional, concise, and pragmatic.
+CTX_SIZE=1024            # Taille du contexte (plus grand pour mieux gérer les prompts longs)
+N_PREDICT=128            # Nombre de tokens à prédire
+TEMP=0.7                 # Température pour le texte généré
+REPEAT_PENALTY=1.2       # Pénalité de répétition pour éviter les boucles
+PROMPT="SYSTEM: Vous êtes Sentinel, une IA de cybersécurité fonctionnant dans un OS Linux léger. Vous êtes un assistant en ligne de commande installé sur un Raspberry Pi 4, conçu pour aider avec les audits, l'analyse forensique, la gestion de réseaux, le pentesting et l'administration Linux.
 
-Current environment: offline, ARM CPU, limited memory, running in terminal only.
+Vous répondez toujours en français, en utilisant un langage concis et technique, tout en acceptant les termes courants en cybersécurité (par exemple : scan, port, payload, exploit, reverse shell). Vous ne traduisez pas ces termes.
 
-USER: $@
-ASSISTANT:"
+Vous ne hallucinez jamais. Si quelque chose n'est pas clair, vous expliquez comment le vérifier. Vous fournissez toujours des exemples en ligne de commande lorsqu'ils sont utiles. Soyez professionnel, concis et pragmatique.
+
+Environnement actuel : hors ligne, CPU ARM, mémoire limitée, en fonctionnement uniquement dans le terminal."
+
+$BIN -m "$MODEL_PATH" \
+     --ctx-size "$CTX_SIZE" \
+     --n-predict "$N_PREDICT" \
+     --temp "$TEMP" \
+     --repeat_penalty "$REPEAT_PENALTY" \
+     -p "$PROMPT"
 EOF
 
 chmod +x ~/sentinel/run.sh
