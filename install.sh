@@ -26,9 +26,14 @@ sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
     iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev
 
 log "Installation de Oh My Zsh..."
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+    log "Oh My Zsh est déjà installé, saut..."
+fi
 
 log "Configuration bannière Zsh..."
+if ! grep -q "Sentinel ASCII Banner" ~/.zshrc; then
 cat <<'EOF' >> ~/.zshrc
 
 # Sentinel ASCII Banner
@@ -58,35 +63,37 @@ alias sentinel='~/sentinel/run.sh'
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
 
 EOF
+fi
 
 log "Changement de shell vers Zsh..."
 chsh -s $(which zsh)
 
-log "Clonage de llama.cpp..."
 mkdir -p ~/sentinel
-git clone https://github.com/ggerganov/llama.cpp.git ~/sentinel/llama.cpp
-cd ~/sentinel/llama.cpp
 
-ARCH=$(uname -m)
-if [[ "$ARCH" == "aarch64" ]]; then
-    log "Compilation pour ARM (aarch64)..."
-    make LLAMA_OPENBLAS=1
+log "Clonage de llama.cpp..."
+if [ ! -d "$HOME/sentinel/llama.cpp/.git" ]; then
+    git clone https://github.com/ggerganov/llama.cpp.git ~/sentinel/llama.cpp
 else
-    log "Compilation standard..."
-    make
+    log "llama.cpp déjà cloné, saut..."
 fi
+
+log "Compilation via CMake..."
+cd ~/sentinel/llama.cpp
+mkdir -p build && cd build
+cmake .. -DLLAMA_BLAS=ON -DLLAMA_BLAS_VENDOR=OpenBLAS
+make -j$(nproc)
 
 log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
 wget -nc https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf -O phi-2.gguf
 
-log "Création du script run.sh avec prompt système optimisé..."
+log "Création du script run.sh..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
-cd ~/sentinel/llama.cpp
+cd ~/sentinel/llama.cpp/build
 
-./main -m ../models/phi-2.gguf -p \
+./main -m ../../models/phi-2.gguf -p \
 "SYSTEM: You are Sentinel, an offline cybersecurity AI running inside a lightweight Linux OS. You are a CLI-based assistant installed on a Raspberry Pi 4, designed to help with audits, forensics, networking, penetration testing, and Linux administration.
 
 You always reply in fluent French, using concise and technical language, but you accept common English terms used in cybersecurity (e.g. scan, port, payload, exploit, reverse shell). You do not translate those.
@@ -102,15 +109,19 @@ EOF
 chmod +x ~/sentinel/run.sh
 
 log "Clonage de enum4linux..."
-git clone https://github.com/CiscoCXSecurity/enum4linux.git ~/sentinel/tools/enum4linux
+mkdir -p ~/sentinel/tools
+if [ ! -d "$HOME/sentinel/tools/enum4linux/.git" ]; then
+    git clone https://github.com/CiscoCXSecurity/enum4linux.git ~/sentinel/tools/enum4linux
+else
+    log "enum4linux déjà cloné, saut..."
+fi
 
 log "Installation de nuclei..."
-mkdir -p ~/sentinel/tools
-cd ~/sentinel/tools
-wget https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_amd64.deb -O nuclei.deb
-sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
+ARCH=$(dpkg --print-architecture)
+NUCLEI_URL="https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_${ARCH}.deb"
+wget -nc "$NUCLEI_URL" -O nuclei.deb && sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
 
-log "Création du fichier de documentation des outils..."
+log "Création de la documentation..."
 mkdir -p ~/sentinel/docs
 cat <<'EOF' > ~/sentinel/docs/tools_doc.txt
 # Liste des Outils disponibles dans Sentinel
