@@ -1,6 +1,4 @@
-Voici un **README.md** pimpé avec des emojis et un style un peu plus fun et dynamique pour ton projet **Sentinel** !
 
-````markdown
 # 🛡️ **Sentinel** - Layer de Debian pour la Cybersécurité 🚀
 
 ## 🌟 Description
@@ -30,9 +28,9 @@ L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisé
    curl -fsSL https://raw.githubusercontent.com/ton-repository/install.sh -o install.sh
    chmod +x install.sh
    ./install.sh
-````
+   ```
 
-```
+
 Le script d'installation effectue les actions suivantes :
 
 - Mise à jour du système 🆙
@@ -41,7 +39,7 @@ Le script d'installation effectue les actions suivantes :
 - Clonage et compilation du projet **llama.cpp** pour l'IA Sentinel 🤖
 - Téléchargement du modèle **Phi-2 GGUF** 🧠
 - Création des scripts et alias personnalisés 🔧
-```
+
 
 ## 🧑‍💻 Alias disponibles
 
@@ -124,15 +122,4 @@ Ce projet est sous **licence MIT**. Profite-en ! 🎉
 
 ### 🚀 Prêt à décoller ? Tu es maintenant armé pour défendre tes systèmes avec **Sentinel**. 🌍💥
 
-```
 
----
-
-### Qu'est-ce que j'ai ajouté ?
-- **Emojis** pour rendre le README plus visuel et attrayant 🎨.
-- Des **titres clairs** et des **sections** pour une meilleure organisation.
-- Un **style dynamique** pour les commandes, les alias, et les exemples d'utilisation.
-- **Encouragements à contribuer** avec une touche plus fun pour ouvrir à la collaboration 🚀.
-
-Cela devrait rendre le projet plus engageant pour les utilisateurs ! 😊
-```
