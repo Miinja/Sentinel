@@ -4,44 +4,22 @@
 # INSTALL.SH – Sentinel Layer 
 # ============================
 
-read -p "==> [Sentinel] Voulez-vous mettre à jour le système et (ré)installer les outils ? (y/n): " do_install
-
-if [[ "$do_install" == "y" ]]; then
-    echo "==> [Sentinel] Mise à jour du système..."
-    sudo apt update && sudo apt upgrade -y
-
-    echo "==> [Sentinel] Installation des outils nécessaires..."
-    sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
-        nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap \
-        iperf3 iftop htop unzip arp-scan hydra john lynis bat mitmproxy
-
-    echo "==> [Sentinel] Installation manuelle de enum4linux..."
-    if [ ! -d "/opt/enum4linux" ]; then
-        sudo git clone https://github.com/CyberScan-Network/enum4linux-ng.git /opt/enum4linux
-        sudo ln -s /opt/enum4linux/enum4linux-ng.py /usr/local/bin/enum4linux
-        sudo chmod +x /usr/local/bin/enum4linux
-    else
-        echo "==> enum4linux est déjà installé."
-    fi
-
-    echo "==> [Sentinel] Installation manuelle de nuclei..."
-    if ! command -v nuclei &> /dev/null; then
-        curl -s https://api.github.com/repos/projectdiscovery/nuclei/releases/latest \
-        | grep "browser_download_url.*linux_amd64.zip" \
-        | cut -d '"' -f 4 \
-        | wget -i - -O nuclei.zip
-
-        unzip nuclei.zip
-        sudo mv nuclei /usr/local/bin/
-        sudo chmod +x /usr/local/bin/nuclei
-        rm nuclei.zip
-    else
-        echo "==> nuclei est déjà installé."
-    fi
-
-    echo "==> [Sentinel] Installation de Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+read -p "Souhaitez-vous (ré)installer les outils et dépendances ? (y/n) " install_tools
+if [[ "$install_tools" != "y" ]]; then
+    echo "==> [Sentinel] Installation annulée."
+    exit 0
 fi
+
+echo "==> [Sentinel] Mise à jour du système..."
+sudo apt update && sudo apt upgrade -y
+
+echo "==> [Sentinel] Installation des outils nécessaires..."
+sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
+    nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap \
+    iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev
+
+echo "==> [Sentinel] Installation de Oh My Zsh..."
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 echo "==> [Sentinel] Configuration bannière Zsh..."
 cat <<'EOF' >> ~/.zshrc
@@ -79,28 +57,27 @@ EOF
 echo "==> [Sentinel] Changement de shell vers Zsh..."
 chsh -s $(which zsh)
 
+echo "==> [Sentinel] Clonage de llama.cpp..."
 mkdir -p ~/sentinel
+git clone https://github.com/ggerganov/llama.cpp.git ~/sentinel/llama.cpp
+cd ~/sentinel/llama.cpp
 
-if [ ! -d "~/sentinel/llama.cpp" ]; then
-    echo "==> [Sentinel] Clonage de llama.cpp..."
-    git clone https://github.com/ggerganov/llama.cpp.git ~/sentinel/llama.cpp
-    cd ~/sentinel/llama.cpp
-    make
+# Détection d'architecture et compilation adaptée
+ARCH=$(uname -m)
+if [[ "$ARCH" == "aarch64" ]]; then
+    echo "==> [Sentinel] Compilation pour ARM (aarch64)..."
+    make LLAMA_OPENBLAS=1
 else
-    echo "==> llama.cpp est déjà présent."
+    echo "==> [Sentinel] Compilation standard..."
+    make
 fi
 
 echo "==> [Sentinel] Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
+wget -nc https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf -O phi-2.gguf
 
-if [ ! -f "phi-2.gguf" ]; then
-    wget https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf -O phi-2.gguf
-else
-    echo "==> Modèle déjà téléchargé."
-fi
-
-echo "==> [Sentinel] Création du script run.sh..."
+echo "==> [Sentinel] Création du script run.sh avec prompt système optimisé..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 cd ~/sentinel/llama.cpp
@@ -120,48 +97,57 @@ EOF
 
 chmod +x ~/sentinel/run.sh
 
-mkdir -p ~/sentinel/docs
+echo "==> [Sentinel] Clonage de enum4linux (non disponible via apt)..."
+git clone https://github.com/CiscoCXSecurity/enum4linux.git ~/sentinel/tools/enum4linux
+
+echo "==> [Sentinel] Installation de nuclei..."
+mkdir -p ~/sentinel/tools
+cd ~/sentinel/tools
+wget https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_amd64.deb -O nuclei.deb
+sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
 
 echo "==> [Sentinel] Création du fichier de documentation des outils..."
+
+mkdir -p ~/sentinel/docs
 cat <<'EOF' > ~/sentinel/docs/tools_doc.txt
 # Liste des Outils disponibles dans Sentinel
 
-nmap : Scan réseau pour détecter les hôtes/services
-tcpdump : Capture réseau en ligne de commande
-tshark : Version CLI de Wireshark
-whois : Interroge les bases WHOIS
-aircrack-ng : Sécurité des réseaux Wi-Fi
-nikto : Scanner vulnérabilités serveurs web
-sqlmap : Injection SQL automatisée
-iperf3 : Test bande passante réseau
-iftop : Trafic réseau en temps réel
-htop : Surveillance des ressources système
+nmap : Scan réseau
+tcpdump : Capture réseau
+tshark : Wireshark CLI
+whois : Infos domaine
+aircrack-ng : Sécurité Wi-Fi
+nikto : Vulnérabilités Web
+sqlmap : Injection SQL
+iperf3 : Bande passante
+iftop : Trafic réseau live
+htop : Ressources système
 unzip : Décompression ZIP
-arp-scan : Découverte d'hôtes sur un LAN
-enum4linux : Enumération systèmes Windows (via GitHub)
-hydra : Brute-force pour divers protocoles
-john : Cracking de hash de mots de passe
-lynis : Audit de sécurité
-bat : Version améliorée de 'cat'
-mitmproxy : Proxy HTTP/HTTPS pour intercepter
-nuclei : Scanner de vulnérabilités (via GitHub)
+arp-scan : Découverte réseau local
+enum4linux : Enumération systèmes Windows (cloné localement)
+hydra : Brute-force
+john : Cracking de hash
+lynis : Audit sécurité
+bat : cat amélioré
+mitmproxy : Interception HTTPS
+nuclei : Scanner vulnérabilités (via GitHub)
 
-# Alias disponibles
+# Alias
 
-sniff : tcpdump sur toutes interfaces
-live : iftop (trafic réseau)
-scan : nmap rapide
-vuln : nikto sur hôte
-sentinel : assistant IA local
-sentinel-help : cette doc
+- sniff : `tcpdump -i any`
+- live : `iftop`
+- scan : `nmap -sV -T4`
+- vuln : `nikto -host`
+- sentinel : lance l’IA
+- sentinel-help : cette doc
 EOF
 
 chmod +x ~/sentinel/docs/tools_doc.txt
 
 echo "==> [Sentinel] Installation terminée."
-echo "👉 Tape 'source ~/.zshrc' pour activer les alias."
-echo "👉 Utilise 'sentinel-help' pour voir la documentation."
-echo "👉 Pour discuter avec Sentinel :"
+echo "👉 Lance une nouvelle session ou tape 'source ~/.zshrc' pour activer les alias."
+echo "👉 Utilise 'sentinel-help' pour lire la documentation rapide."
+echo "👉 Tu peux maintenant discuter avec Sentinel :"
 echo ""
 echo "     sentinel Comment auditer un réseau interne ?"
 echo ""
