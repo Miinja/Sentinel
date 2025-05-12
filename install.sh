@@ -65,6 +65,7 @@ sentinel() {
 }
 
 # Alias Sentinel
+alias sentinel = '~/sentinel/run.sh'
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
 alias sentinel-system='neofetch --cpu_temp --gpu_temp'
 
@@ -121,13 +122,10 @@ cd ~/sentinel/llama.cpp/build
 if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
     echo "❌ Erreur : aucun binaire 'llama-*' trouvé dans bin/, compilation probablement échouée."
     exit 1
-else
-    echo "✅ Compilation réussie : un ou plusieurs binaires 'llama-*' trouvés."
 fi
 
 # Trouver le binaire llama (nom générique pour être plus flexible)
 BIN=$(ls ./bin/llama-* | head -n1)
-echo "Lancement de $BIN avec le modèle..."
 $BIN -m ../../models/phi-2.gguf -p \
 "SYSTEM: You are Sentinel, an offline cybersecurity AI running inside a lightweight Linux OS. You are a CLI-based assistant installed on a Raspberry Pi 4, designed to help with audits, forensics, networking, penetration testing, and Linux administration.
 
@@ -226,5 +224,5 @@ echo "👉 Lance une nouvelle session ou tape 'source ~/.zshrc' pour activer les
 echo "👉 Utilise 'sentinel-help' pour lire la documentation rapide."
 echo "👉 Tu peux maintenant discuter avec Sentinel :"
 echo ""
-echo "     sentinel Comment auditer un réseau interne ?"
+echo '     sentinel "Comment auditer un réseau interne ?"'
 echo ""
