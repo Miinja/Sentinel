@@ -162,7 +162,7 @@ fi
 log "Téléchargement du modèle Phi-2 GGUF..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
-if ! wget -nc https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf -O phi-2.gguf; then
+if ! curl -L -o phi-2.gguf https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf; then
     log "❌ Échec du téléchargement du modèle."
     exit 1
 fi
