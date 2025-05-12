@@ -4,24 +4,31 @@
 # INSTALL.SH – Sentinel Layer 
 # ============================
 
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+log() {
+    echo -e "${YELLOW}==> [Sentinel] $1${NC}"
+}
+
 read -p "Souhaitez-vous (ré)installer les outils et dépendances ? (y/n) " install_tools
 if [[ "$install_tools" != "y" ]]; then
-    echo "==> [Sentinel] Installation annulée."
+    log "Installation annulée."
     exit 0
 fi
 
-echo "==> [Sentinel] Mise à jour du système..."
+log "Mise à jour du système..."
 sudo apt update && sudo apt upgrade -y
 
-echo "==> [Sentinel] Installation des outils nécessaires..."
+log "Installation des outils nécessaires..."
 sudo apt install -y build-essential git cmake curl wget zsh python3-pip \
     nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap \
     iperf3 iftop htop unzip arp-scan hydra john lynis bat libopenblas-dev
 
-echo "==> [Sentinel] Installation de Oh My Zsh..."
+log "Installation de Oh My Zsh..."
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-echo "==> [Sentinel] Configuration bannière Zsh..."
+log "Configuration bannière Zsh..."
 cat <<'EOF' >> ~/.zshrc
 
 # Sentinel ASCII Banner
@@ -48,36 +55,33 @@ alias vuln='nikto -host'
 
 # Alias Sentinel
 alias sentinel='~/sentinel/run.sh'
-
-# Alias pour la documentation des outils
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
 
 EOF
 
-echo "==> [Sentinel] Changement de shell vers Zsh..."
+log "Changement de shell vers Zsh..."
 chsh -s $(which zsh)
 
-echo "==> [Sentinel] Clonage de llama.cpp..."
+log "Clonage de llama.cpp..."
 mkdir -p ~/sentinel
 git clone https://github.com/ggerganov/llama.cpp.git ~/sentinel/llama.cpp
 cd ~/sentinel/llama.cpp
 
-# Détection d'architecture et compilation adaptée
 ARCH=$(uname -m)
 if [[ "$ARCH" == "aarch64" ]]; then
-    echo "==> [Sentinel] Compilation pour ARM (aarch64)..."
+    log "Compilation pour ARM (aarch64)..."
     make LLAMA_OPENBLAS=1
 else
-    echo "==> [Sentinel] Compilation standard..."
+    log "Compilation standard..."
     make
 fi
 
-echo "==> [Sentinel] Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
+log "Téléchargement du modèle Phi-2 GGUF (q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
 wget -nc https://huggingface.co/TheBloke/phi-2-GGUF/resolve/main/phi-2.Q4_K_M.gguf -O phi-2.gguf
 
-echo "==> [Sentinel] Création du script run.sh avec prompt système optimisé..."
+log "Création du script run.sh avec prompt système optimisé..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 cd ~/sentinel/llama.cpp
@@ -97,17 +101,16 @@ EOF
 
 chmod +x ~/sentinel/run.sh
 
-echo "==> [Sentinel] Clonage de enum4linux (non disponible via apt)..."
+log "Clonage de enum4linux..."
 git clone https://github.com/CiscoCXSecurity/enum4linux.git ~/sentinel/tools/enum4linux
 
-echo "==> [Sentinel] Installation de nuclei..."
+log "Installation de nuclei..."
 mkdir -p ~/sentinel/tools
 cd ~/sentinel/tools
 wget https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_amd64.deb -O nuclei.deb
 sudo dpkg -i nuclei.deb || echo "⚠️ Erreur d'installation de nuclei, essaie manuellement."
 
-echo "==> [Sentinel] Création du fichier de documentation des outils..."
-
+log "Création du fichier de documentation des outils..."
 mkdir -p ~/sentinel/docs
 cat <<'EOF' > ~/sentinel/docs/tools_doc.txt
 # Liste des Outils disponibles dans Sentinel
@@ -144,7 +147,7 @@ EOF
 
 chmod +x ~/sentinel/docs/tools_doc.txt
 
-echo "==> [Sentinel] Installation terminée."
+log "Installation terminée."
 echo "👉 Lance une nouvelle session ou tape 'source ~/.zshrc' pour activer les alias."
 echo "👉 Utilise 'sentinel-help' pour lire la documentation rapide."
 echo "👉 Tu peux maintenant discuter avec Sentinel :"
