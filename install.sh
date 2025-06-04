@@ -54,36 +54,6 @@ else
     log "Oh My Zsh est déjà installé, saut..."
 fi
 
-log "Clonage de enum4linux..."
-mkdir -p ~/sentinel/tools
-if [ ! -d "$HOME/sentinel/tools/enum4linux/.git" ]; then
-    if ! git clone https://github.com/CiscoCXSecurity/enum4linux.git ~/sentinel/tools/enum4linux; then
-        log "❌ Échec du clonage de enum4linux."
-        exit 1
-    fi
-else
-    log "enum4linux déjà cloné, saut..."
-fi
-
-log "Installation de nuclei..."
-ARCH=$(dpkg --print-architecture)
-
-if [[ "$ARCH" == "arm64" ]]; then
-    if ! wget -nc https://github.com/projectdiscovery/nuclei/releases/download/v3.4.3/nuclei_3.4.3_linux_arm64.zip; then
-        log "❌ Échec du téléchargement de nuclei (ARM64)."
-        exit 1
-    fi
-    unzip -o nuclei_3.4.3_linux_arm64.zip
-    sudo mv nuclei /usr/local/bin/
-    chmod +x /usr/local/bin/nuclei
-    rm nuclei_3.4.3_linux_arm64.zip
-else
-    NUCLEI_URL="https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_${ARCH}.deb"
-    if ! wget -nc "$NUCLEI_URL" -O nuclei.deb || ! sudo dpkg -i nuclei.deb; then
-        log "⚠️ Erreur d'installation de nuclei, essaie manuellement."
-    fi
-fi
-
 log "Configuration bannière Zsh..."
 if ! grep -q "Sentinel ASCII Banner" ~/.zshrc; then
 cat <<'EOF' >> ~/.zshrc
@@ -152,26 +122,19 @@ if ! make -j$(nproc); then
     exit 1
 fi
 
-if ! ls ./bin/llama-* 1> /dev/null 2>&1; then
-    log "❌ Aucun binaire 'llama-*' trouvé."
-    exit 1
-else
-    log "✅ Compilation réussie."
-fi
-
-log "Téléchargement du modèle Phi-1.5 GGUF (q4_0)..."
+log "Téléchargement du modèle TinyLlama GGUF (Q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
 
-if [ -f "phi-1.5.gguf" ]; then
+if [ -f "tinyllama.gguf" ]; then
     log "Modèle déjà présent, saut du téléchargement."
 else
-    if ! curl -L -o phi-1.5.gguf https://huggingface.co/TheBloke/phi-1.5-GGUF/resolve/main/phi-1.5.Q4_0.gguf; then
-        log "❌ Échec du téléchargement du modèle Phi-1.5."
+    if ! curl -L -o tinyllama.gguf https://huggingface.co/tensorblock/tinyllama-GGUF/raw/main/tinyllama-Q4_K_M.gguf; then
+        log "❌ Échec du téléchargement du modèle TinyLlama."
         exit 1
     fi
 
-    if ! head -c 4 phi-1.5.gguf | grep -q "GGUF"; then
+    if ! head -c 4 tinyllama.gguf | grep -q "GGUF"; then
         log "❌ Fichier téléchargé invalide (pas un modèle GGUF ?)."
         exit 1
     fi
@@ -181,7 +144,7 @@ log "Création du script run.sh..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 
-MODEL_PATH="../../models/phi-1.5.gguf"
+MODEL_PATH="../../models/tinyllama.gguf"
 OUTPUT_PATH="output.txt"
 
 if [ ! -d "$HOME/sentinel/llama.cpp/build" ]; then
@@ -203,17 +166,11 @@ if [ ! -f "$MODEL_PATH" ]; then
     exit 1
 fi
 
-CTX_SIZE=1024            # Taille du contexte (plus grand pour mieux gérer les prompts longs)
-N_PREDICT=128            # Nombre de tokens à prédire
-TEMP=0.7                 # Température pour le texte généré
-REPEAT_PENALTY=1.2       # Pénalité de répétition pour éviter les boucles
-PROMPT="SYSTEM: Vous êtes Sentinel, une IA de cybersécurité fonctionnant dans un OS Linux léger. Vous êtes un assistant en ligne de commande installé sur un Raspberry Pi 4, conçu pour aider avec les audits, l'analyse forensique, la gestion de réseaux, le pentesting et l'administration Linux.
-
-Vous répondez toujours en français, en utilisant un langage concis et technique, tout en acceptant les termes courants en cybersécurité (par exemple : scan, port, payload, exploit, reverse shell). Vous ne traduisez pas ces termes.
-
-Vous ne hallucinez jamais. Si quelque chose n'est pas clair, vous expliquez comment le vérifier. Vous fournissez toujours des exemples en ligne de commande lorsqu'ils sont utiles. Soyez professionnel, concis et pragmatique.
-
-Environnement actuel : hors ligne, CPU ARM, mémoire limitée, en fonctionnement uniquement dans le terminal."
+CTX_SIZE=512            # Taille du contexte
+N_PREDICT=128           # Nombre de tokens à prédire
+TEMP=0.7                # Température pour le texte généré
+REPEAT_PENALTY=1.2      # Pénalité de répétition pour éviter les boucles
+PROMPT="SYSTEM: Vous êtes Sentinel, une IA de cybersécurité fonctionnant dans un OS Linux léger. Vous êtes un assistant en ligne de commande installé sur un Raspberry Pi 4, conçu pour aider avec les audits, l'analyse forensique, la gestion de réseaux, le pentesting et l'administration Linux."
 
 $BIN -m "$MODEL_PATH" \
      --ctx-size "$CTX_SIZE" \
@@ -242,33 +199,12 @@ iftop : Trafic réseau live
 htop : Ressources système
 unzip : Décompression ZIP
 arp-scan : Découverte réseau local
-enum4linux : Enumération systèmes Windows (cloné localement)
+enum4linux : Enumération systèmes Windows
 hydra : Brute-force
 john : Cracking de hash
 lynis : Audit sécurité
 bat : cat amélioré
 mitmproxy : Interception HTTPS
-nuclei : Scanner vulnérabilités (via GitHub)
-nmap : Vue global du systeme
-
-# Liste des Alias disponibles dans Sentinel
-
-## Alias pour la capture réseau et surveillance
-- `sniff` : Lance tcpdump pour capturer tout le trafic réseau sur toutes les interfaces.
-- `live` : Lance iftop pour afficher en temps réel la bande passante réseau.
-
-## Alias pour les scans et tests de vulnérabilité
-- `scan` : Lance un scan de ports et services sur une cible avec nmap.
-- `vuln` : Lance un scan de vulnérabilités sur un serveur web avec nikto.
-
-## Alias pour l'interaction avec Sentinel
-- `sentinel` : Lance l’assistant Sentinel (IA basée sur un LLM).
-
-## Alias pour afficher la documentation
-- `sentinel-help` : Affiche la documentation des outils installés et des alias disponibles.
-
-## Alias Overall Systeme
-- `sentinel-system` : Vue global du système (avec la température GPU/CPU)
 EOF
 
 chmod +x ~/sentinel/docs/tools_doc.txt
