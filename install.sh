@@ -174,13 +174,13 @@ if [ ! -f "$MODEL_PATH" ]; then
 fi
 
 # Génère dynamiquement la liste des outils installés
-TOOLS=$(compgen -c | grep -E '^(nmap|tcpdump|tshark|whois|aircrack-ng|nikto|sqlmap|iperf3|iftop|htop|arp-scan|hydra|john|lynis|bat|mitmproxy)' | sort -u | tr '\n' ', ')
+TOOLS=$(compgen -c | grep -E '^(nmap|tcpdump|tshark|whois|aircrack-ng|nikto|sqlmap|iperf3|iftop|htop|arp-scan|hydra|john|lynis|bat|mitmproxy)' | sort -u | tr '\n' ', ' | sed 's/, $//')
 
 CTX_SIZE=512
 N_PREDICT=192
 TEMP=0.4
 REPEAT_PENALTY=1.2
-PROMPT="SYSTEM: You are Sentinel, a local cybersecurity assistant running on a Raspberry Pi 4. You are aware of the system context and installed tools (such as: ${TOOLS}). Your purpose is to help with digital forensics, ethical hacking, Wi-Fi auditing, penetration testing, and Linux system administration. You always respond in fluent and precise **French**, even if the input is in another language. Keep answers concise, technical, and actionable when possible."
+PROMPT="SYSTEM: You are Sentinel, a local cybersecurity assistant running on a Raspberry Pi 4. You know the system context and installed tools (such as: ${TOOLS}). Your task is to assist with digital forensics, ethical hacking, Wi-Fi auditing, penetration testing, and Linux administration. Always respond concisely in fluent French, even if the input is in another language."
 
 $BIN -m "$MODEL_PATH" \
      --ctx-size "$CTX_SIZE" \
