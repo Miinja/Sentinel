@@ -126,8 +126,12 @@ log "Téléchargement du modèle TinyLlama GGUF (Q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
 
-MODEL_URL="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf"
-MODEL_NAME="tinyllama.gguf"
+MODEL_URL="https://huggingface.co/tensorblock/tinyllama-15M-GGUF/resolve/main/tinyllama-15M-Q2_K.gguf"
+MODEL_NAME="tinyllama-15M-Q2_K.gguf"
+
+log "Téléchargement du modèle TinyLlama 15M (Q2_K)..."
+mkdir -p ~/sentinel/models
+cd ~/sentinel/models
 
 if [ -f "$MODEL_NAME" ]; then
     log "Modèle déjà présent, saut du téléchargement."
@@ -147,7 +151,7 @@ log "Création du script run.sh..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 
-MODEL_PATH="$HOME/sentinel/models/tinyllama.gguf"
+MODEL_PATH="$HOME/sentinel/models/tinyllama-15M-Q2_K.gguf"
 OUTPUT_PATH="output.txt"
 
 if [ ! -d "$HOME/sentinel/llama.cpp/build" ]; then
