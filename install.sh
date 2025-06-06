@@ -126,15 +126,18 @@ log "Téléchargement du modèle TinyLlama GGUF (Q4_K_M)..."
 mkdir -p ~/sentinel/models
 cd ~/sentinel/models
 
-if [ -f "tinyllama.gguf" ]; then
+MODEL_URL="https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf"
+MODEL_NAME="tinyllama.gguf"
+
+if [ -f "$MODEL_NAME" ]; then
     log "Modèle déjà présent, saut du téléchargement."
 else
-    if ! curl -L -o tinyllama.gguf https://huggingface.co/tensorblock/tinyllama-GGUF/raw/main/tinyllama-Q4_K_M.gguf; then
+    if ! curl -L -o "$MODEL_NAME" "$MODEL_URL"; then
         log "❌ Échec du téléchargement du modèle TinyLlama."
         exit 1
     fi
 
-    if ! head -c 4 tinyllama.gguf | grep -q "GGUF"; then
+    if ! head -c 4 "$MODEL_NAME" | grep -q "GGUF"; then
         log "❌ Fichier téléchargé invalide (pas un modèle GGUF ?)."
         exit 1
     fi
@@ -144,7 +147,7 @@ log "Création du script run.sh..."
 cat <<'EOF' > ~/sentinel/run.sh
 #!/bin/bash
 
-MODEL_PATH="../../models/tinyllama.gguf"
+MODEL_PATH="$HOME/sentinel/models/tinyllama.gguf"
 OUTPUT_PATH="output.txt"
 
 if [ ! -d "$HOME/sentinel/llama.cpp/build" ]; then
@@ -166,11 +169,14 @@ if [ ! -f "$MODEL_PATH" ]; then
     exit 1
 fi
 
-CTX_SIZE=512            # Taille du contexte
-N_PREDICT=128           # Nombre de tokens à prédire
-TEMP=0.7                # Température pour le texte généré
-REPEAT_PENALTY=1.2      # Pénalité de répétition pour éviter les boucles
-PROMPT="SYSTEM: Vous êtes Sentinel, une IA de cybersécurité fonctionnant dans un OS Linux léger. Vous êtes un assistant en ligne de commande installé sur un Raspberry Pi 4, conçu pour aider avec les audits, l'analyse forensique, la gestion de réseaux, le pentesting et l'administration Linux."
+# Génère dynamiquement la liste des outils installés
+TOOLS=$(compgen -c | grep -E '^(nmap|tcpdump|tshark|whois|aircrack-ng|nikto|sqlmap|iperf3|iftop|htop|arp-scan|hydra|john|lynis|bat|mitmproxy)' | sort -u | tr '\n' ', ')
+
+CTX_SIZE=512
+N_PREDICT=192
+TEMP=0.4
+REPEAT_PENALTY=1.2
+PROMPT="SYSTEM: You are Sentinel, a local cybersecurity assistant running on a Raspberry Pi 4. You are aware of the system context and installed tools (such as: ${TOOLS}). Your purpose is to help with digital forensics, ethical hacking, Wi-Fi auditing, penetration testing, and Linux system administration. You always respond in fluent and precise **French**, even if the input is in another language. Keep answers concise, technical, and actionable when possible."
 
 $BIN -m "$MODEL_PATH" \
      --ctx-size "$CTX_SIZE" \
