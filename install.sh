@@ -41,7 +41,7 @@ tools=(
     build-essential git cmake curl wget zsh python3-pip
     nmap net-tools tcpdump tshark whois aircrack-ng nikto sqlmap
     iperf3 iftop htop unzip arp-scan hydra john lynis bat neofetch
-    libopenblas-dev libcurl4-openssl-dev libomp-dev pkg-config
+    libopenblas-dev libcurl4-openssl-dev libomp-dev pkg-config enum4linux
 )
 for tool in "${tools[@]}"; do
     install_if_needed "$tool"
@@ -174,7 +174,7 @@ if [ ! -f "$MODEL_PATH" ]; then
 fi
 
 # Génère dynamiquement la liste des outils installés
-TOOLS=$(compgen -c | grep -E '^(nmap|tcpdump|tshark|whois|aircrack-ng|nikto|sqlmap|iperf3|iftop|htop|arp-scan|hydra|john|lynis|bat|mitmproxy)' | sort -u | tr '\n' ', ' | sed 's/, $//')
+TOOLS=$(compgen -c | grep -E '^(nmap|tcpdump|tshark|whois|aircrack-ng|nikto|sqlmap|iperf3|iftop|htop|arp-scan|hydra|john|lynis|bat)' | sort -u | tr '\n' ', ' | sed 's/, $//')
 
 CTX_SIZE=512
 N_PREDICT=192
@@ -214,7 +214,6 @@ hydra : Brute-force
 john : Cracking de hash
 lynis : Audit sécurité
 bat : cat amélioré
-mitmproxy : Interception HTTPS
 EOF
 
 chmod +x ~/sentinel/docs/tools_doc.txt
