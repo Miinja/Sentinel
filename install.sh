@@ -77,7 +77,6 @@ echo ""
 alias sniff='sudo tcpdump -i any'
 alias live='sudo iftop'
 alias scan='nmap -sV -T4'
-alias vuln='nikto -host'
 
 # Alias Sentinel
 alias sentinel-help='cat ~/sentinel/docs/tools_doc.txt'
