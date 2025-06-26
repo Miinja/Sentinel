@@ -39,7 +39,7 @@ install_if_needed() {
 log "Installation des outils nécessaires..."
 tools=(
     nmap tcpdump tshark whois aircrack-ng sqlmap
-    iperf3 iftop htop unzip arp-scan enum4linux hydra john lynis bat
+    iperf3 iftop htop unzip arp-scan hydra john lynis bat
     neofetch zsh curl git
 )
 for tool in "${tools[@]}"; do
@@ -105,7 +105,6 @@ iftop : Trafic réseau live
 htop : Ressources système
 unzip : Décompression ZIP
 arp-scan : Découverte réseau local
-enum4linux : Enumération systèmes Windows
 hydra : Brute-force
 john : Cracking de hash
 lynis : Audit sécurité
