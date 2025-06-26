@@ -1,15 +1,14 @@
 
-# 🛡️ **Sentinel** - Layer de Debian pour la Cybersécurité 🚀
+# 🛡️ **Sentinel No IA** - Layer de Debian pour la Cybersécurité 🚀
 
 ## 🌟 Description
 
-**Sentinel** est un environnement léger et sécurisé basé sur Debian, conçu pour les **professionnels de la cybersécurité**. Il inclut une série d'outils puissants pour les **audits**, les **tests de pénétration**, la **surveillance réseau**, et plus encore. Le système fonctionne de manière totalement **hors ligne** sur des machines basées sur des processeurs **ARM** (ex. Raspberry Pi).
+**Sentinel** est un environnement léger et sécurisé basé sur Debian, conçu pour les **professionnels de la cybersécurité**. Il inclut une série d'outils puissants pour les **audits**, les **tests de pénétration**, la **surveillance réseau**, et plus encore.
 
-L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisée pour les tâches de cybersécurité, avec une intégration fluide d'une **IA de type LLM** pour une assistance interactive. 💡
+L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisée pour les tâches de cybersécurité 💡
 
 ## 📝 Prérequis
 
-- Raspberry Pi 4 (ou tout autre appareil ARM) 🍓
 - Debian (ou une distribution basée sur Debian) 🐧
 - Connexion internet pour l'installation des dépendances 🌐
 
@@ -28,13 +27,10 @@ Le script d'installation effectue les actions suivantes :
 - Mise à jour du système 🆙
 - Installation des outils de cybersécurité 🔐
 - Configuration de **Zsh** et installation de **Oh My Zsh** 🖥️
-- Clonage et compilation du projet **llama.cpp** pour l'IA Sentinel 🤖
-- Téléchargement du modèle **Phi-2 GGUF** 🧠
 - Création des scripts et alias personnalisés 🔧
 
 ## ⚙️ Fonctionnalités
 
-- **💬 IA Sentinel** : Utilise un modèle de langage pour fournir des réponses **techniques** et **concises** en français, adaptées à la cybersécurité. 🛠️
 - **🕵️‍♂️ Outils de cybersécurité** : Des outils populaires pour le **pentesting**, le **scan réseau**, l'**analyse de vulnérabilités**, etc. 🔍
 - **🛠️ Alias personnalisés** : Des alias utiles pour simplifier les commandes courantes et accélérer les opérations de cybersécurité. ⚡
 - **📚 Documentation rapide** : Accès rapide à la **documentation** des outils via un simple alias. 📄
@@ -54,11 +50,6 @@ Voici les principaux alias disponibles dans **Sentinel** :
 * `scan` : Lance un scan de ports et services sur une cible avec **nmap**.
 * `vuln` : Lance un scan de vulnérabilités sur un serveur web avec **nikto**.
 
-### 💬 Alias pour l'interaction avec **Sentinel**
-
-* `sentinel` : Lance l'assistant **Sentinel** (IA basée sur un LLM).
-* `sentinel <question>` : Pose ta question à **Sentinel** en cybersécurité.
-
 ### 📚 Alias pour afficher la documentation
 
 * `sentinel-help` : Affiche la **documentation** des outils installés et des alias disponibles sur Sentinel.
@@ -77,12 +68,6 @@ Voici quelques exemples d'utilisation de **Sentinel** :
 
   ```bash
   sniff
-  ```
-
-* **Demander à l'IA Sentinel un conseil sur un audit réseau** :
-
-  ```bash
-  sentinel Comment auditer un réseau interne ?
   ```
 
 * **Accéder à la documentation des outils** :
