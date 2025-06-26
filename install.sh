@@ -38,7 +38,7 @@ install_if_needed() {
 
 log "Installation des outils nécessaires..."
 tools=(
-    nmap tcpdump tshark whois aircrack-ng nikto sqlmap
+    nmap tcpdump tshark whois aircrack-ng sqlmap
     iperf3 iftop htop unzip arp-scan enum4linux hydra john lynis bat
     neofetch zsh curl git
 )
@@ -100,7 +100,6 @@ tcpdump : Capture réseau
 tshark : Wireshark CLI
 whois : Infos domaine
 aircrack-ng : Sécurité Wi-Fi
-nikto : Vulnérabilités Web
 sqlmap : Injection SQL
 iperf3 : Bande passante
 iftop : Trafic réseau live
