@@ -48,7 +48,7 @@ done
 
 log "Installation de Oh My Zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/Miinja/Sentinel/refs/heads/no-ia/install.sh)"
+    RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
     log "Oh My Zsh est déjà installé, saut..."
 fi
