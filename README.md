@@ -17,7 +17,7 @@ L'objectif est de fournir une interface de **ligne de commande (CLI)** optimisé
 1. **Télécharge le script d'installation** et exécute-le sur ton Raspberry Pi ou machine Debian.
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/Miinja/Sentinel/main/install.sh -o install.sh
+   [curl -fsSL https://raw.githubusercontent.com/Miinja/Sentinel/refs/heads/no-ia/install.sh -o install.sh]
    chmod +x install.sh
    ./install.sh
    ```
