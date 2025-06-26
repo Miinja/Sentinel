@@ -88,7 +88,6 @@ Voici quelques-uns des outils inclus dans **Sentinel** :
 
 * **nmap** : Scanner de réseau pour identifier les hôtes et services.
 * **tcpdump** : Capture réseau en ligne de commande pour analyser les paquets.
-* **nikto** : Scanner de vulnérabilités pour les serveurs web.
 * **sqlmap** : Outil d'injection SQL automatisé pour tester les bases de données.
 * **aircrack-ng** : Suite d'outils pour tester la sécurité des réseaux Wi-Fi.
 
